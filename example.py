@@ -6,6 +6,8 @@ from HSL import rgb2hsl, hsl2rgb
 # This will import the C version 
 from HSL import rgb_to_hsl_c, hsl_to_rgb_c
 
+from HSL import struct_rgb_to_hsl_c, struct_hsl_to_rgb_c
+
 # This import colorsys algo for verifications.
 import colorsys
 from colorsys import rgb_to_hls, hls_to_rgb
@@ -60,38 +62,49 @@ if __name__ == '__main__':
     print("C rgb_to_hsl_c %s for %s iterations: " % (timeit.timeit("rgb_to_hsl_c(r/255.0, g/255.0, b/255.0)",
                                                                    "from __main__ import rgb_to_hsl_c, r, g, b",
                                                                    number=N), N))
+
+    print(
+        "struct_rgb_to_hsl_c %s for %s iterations: " %
+        (timeit.timeit("struct_rgb_to_hsl_c(r/255.0, g/255.0, b/255.0)",
+                       "from __main__ import struct_rgb_to_hsl_c, r, g, b",
+                       number=N), N))
+    print(
+        "struct_hsl_to_rgb_c %s for %s iterations: " %
+        (timeit.timeit("struct_hsl_to_rgb_c(r/255.0, g/255.0, b/255.0)",
+                       "from __main__ import struct_hsl_to_rgb_c, r, g, b",
+                       number=N), N))
+
     print("Colorsys rgb_to_hls %s for %s iterations: " % (timeit.timeit("rgb_to_hls(r/255.0, g/255.0, b/255.0)",
                                                                         "from __main__ import rgb_to_hls, r, g, b",
                                                                         number=N), N))
 
-
     # TEST CYTHON rgb2hsl method vs colorsys.rgb_to_hls
     for i in range(256):
-       for j in range(256):
-           for k in range(256):
-               hsl = rgb2hsl(i/255.0, j/255.0, k/255.0)
-               hls = colorsys.rgb_to_hls(i/255.0, j/255.0, k/255.0)
-               h, s, l = round(hsl[0], 2), round(hsl[1], 2), round(hsl[2], 2)
-               h1, l1, s1 = round(hls[0], 2), round(hls[1], 2), round(hls[2], 2)
-               if abs(h - h1)> 0.1 or abs(s - s1) > 0.1 or abs(l-l1) > 0.1:
-                   print("\n R:%s G:%s B :%s " % (i, j, k))
-                   print("rgb_to_hsl_c   : h:%s s:%s l:%s " % (h, s, l))
-                   print("rgb_to_hls     : h:%s s:%s l:%s " % (h1, s1, l1))
-                   raise ValueError("discrepancy.")
+        for j in range(256):
+            for k in range(256):
+                hsl = rgb2hsl(i / 255.0, j / 255.0, k / 255.0)
+                hls = colorsys.rgb_to_hls(i / 255.0, j / 255.0, k / 255.0)
+                h, s, l = round(hsl[0], 2), round(hsl[1], 2), round(hsl[2], 2)
+                h1, l1, s1 = round(hls[0], 2), round(hls[1], 2), round(hls[2], 2)
+                if abs(h - h1) > 0.1 or abs(s - s1) > 0.1 or abs(l - l1) > 0.1:
+                    print("\n R:%s G:%s B :%s " % (i, j, k))
+                    print("rgb_to_hsl_c   : h:%s s:%s l:%s " % (h, s, l))
+                    print("rgb_to_hls     : h:%s s:%s l:%s " % (h1, s1, l1))
+                    raise ValueError("discrepancy.")
 
     # TEST CYTHON rgb_to_hsl_c method vs colorsys.rgb_to_hls
     for i in range(256):
         for j in range(256):
-           for k in range(256):
-               hsl = rgb_to_hsl_c(i/255.0, j/255.0, k/255.0)
-               hls = colorsys.rgb_to_hls(i/255.0, j/255.0, k/255.0)
-               h, s, l = round(hsl[0], 2), round(hsl[1], 2), round(hsl[2], 2)
-               h1, l1, s1 = round(hls[0], 2), round(hls[1], 2), round(hls[2], 2)
-               if abs(h - h1) > 0.1 or abs(s - s1) > 0.1 or abs(l-l1) > 0.1:
-                   print("\n R:%s G:%s B :%s " % (i, j, k))
-                   print("rgb_to_hsl_c   : h:%s s:%s l:%s " % (h, s, l))
-                   print("rgb_to_hls     : h:%s s:%s l:%s " % (h1, s1, l1))
-                   raise ValueError("discrepancy.")
+            for k in range(256):
+                hsl = rgb_to_hsl_c(i / 255.0, j / 255.0, k / 255.0)
+                hls = colorsys.rgb_to_hls(i / 255.0, j / 255.0, k / 255.0)
+                h, s, l = round(hsl[0], 2), round(hsl[1], 2), round(hsl[2], 2)
+                h1, l1, s1 = round(hls[0], 2), round(hls[1], 2), round(hls[2], 2)
+                if abs(h - h1) > 0.1 or abs(s - s1) > 0.1 or abs(l - l1) > 0.1:
+                    print("\n R:%s G:%s B :%s " % (i, j, k))
+                    print("rgb_to_hsl_c   : h:%s s:%s l:%s " % (h, s, l))
+                    print("rgb_to_hls     : h:%s s:%s l:%s " % (h1, s1, l1))
+                    raise ValueError("discrepancy.")
 
     # TEST C hsl_to_rgb_c method vs colorsys.hls_to_rgb
     for i in range(256):

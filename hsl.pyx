@@ -12,31 +12,45 @@ except ImportError:
 from libc.stdlib cimport srand, rand, RAND_MAX, qsort, malloc, free
 from libc.math cimport fabs, fmod
 
-DEF ONE_255 = 1.0/255.0
-DEF ONE_360 = 1.0/360.0
+DEF ONE_255   = 1.0/255.0
+DEF ONE_360   = 1.0/360.0
 DEF TWO_THIRD = 2.0/3.0
 DEF ONE_SIXTH = 1.0/6.0
 DEF ONE_THIRD = 1.0/3.0
 
-
+# EXTERNAL C CODE (file 'hsl_c.c')
 cdef extern from 'hsl_c.c' nogil:
-    double * rgb_to_hsl(double r, double g, double b);
-    double * hsl_to_rgb(double h, double s, double l);
-    double fmax_rgb_value(double red, double green, double blue);
-    double fmin_rgb_value(double red, double green, double blue);
 
+    struct hsl:
+        double h
+        double s
+        double l
 
+    struct rgb:
+        double r
+        double g
+        double b
+
+    # METHOD WITH POINTER
+    double * rgb_to_hsl(double r, double g, double b)nogil;
+    double * hsl_to_rgb(double h, double s, double l)nogil;
+    # METHOD WITH STRUCT
+    hsl struct_rgb_to_hsl(double r, double g, double b)nogil;
+    rgb struct_hsl_to_rgb(double h, double s, double l)nogil;
+    # DETERMINE RGB MAX VALUES
+    double fmax_rgb_value(double red, double green, double blue)nogil;
+    double fmin_rgb_value(double red, double green, double blue)nogil;
+
+ctypedef hsl HSL
+ctypedef rgb RGB
 
 # -------------------------------------- INTERFACE ------------------------------------------
 
-#***********************************************
-#*******************  METHOD HSL ***************
-#***********************************************
+# METHOD CYTHON (USING POINTER)
+# CONVERT HSL TO RGG
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-
-# CYTHON VERSION
 cpdef hsl2rgb(double h, double s, double l):
     cdef:
         double *rgb
@@ -46,7 +60,8 @@ cpdef hsl2rgb(double h, double s, double l):
     free(rgb)
     return r, g, b
 
-# CYTHON VERSION
+# METHOD CYTHON (USING POINTER)
+# CONVERT RGB TO HSL
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
@@ -59,7 +74,8 @@ cpdef rgb2hsl(double r, double g, double b):
     free(hsl)
     return h, s, l
 
-# C VERSION
+# HOOK FOR THE C VERSION (USING POINTER)
+# HSL TO RGB
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
@@ -72,7 +88,8 @@ cpdef hsl_to_rgb_c(double h, double s, double l):
     free(rgb)
     return r, g, b
 
-# C VERSION
+# HOOK FOR THE C VERSION (USING POINTER)
+# RGB TO HSL
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
@@ -84,6 +101,27 @@ cpdef rgb_to_hsl_c(double r, double g, double b):
     h, s, l = hsl[0], hsl[1], hsl[2]
     free(hsl)
     return h, s, l
+
+
+# HOOK TO THE C VERSION (USING STRUCT)
+# RGB TO HSL
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+cpdef tuple struct_rgb_to_hsl_c(double r, double g, double b):
+    cdef HSL hsl_
+    hsl_ = struct_rgb_to_hsl(r, g, b)
+    return hsl_.h, hsl_.s, hsl_.l
+
+# HOOK TO THE C VERSION (USING STRUCT)
+# HSL TO RGB
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+cpdef tuple struct_hsl_to_rgb_c(double h, double s, double l):
+    cdef RGB rgb_
+    rgb_ = struct_hsl_to_rgb(h, s, l)
+    return rgb_.r, rgb_.g, rgb_.b
 
 # ----------------------------------------- SOURCE CODE ------------------------------------------------
 
