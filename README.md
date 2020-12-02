@@ -1,4 +1,4 @@
-# HSL
+# HSL algorithm
 HSL to RGB and RGB to HSL
 
 ## RGB to HSL and HSL to RGB colors system converstion tools.
