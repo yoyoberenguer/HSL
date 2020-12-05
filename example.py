@@ -1,15 +1,25 @@
 import HSL
 
-# This will import the cython version 
-from HSL import rgb2hsl, hsl2rgb
+# This will import the cython version
+try:
+    from HSL import rgb2hsl, hsl2rgb
+except ImportError:
+    raise ImportError(
+        "\n<HSL> library is missing on your system or HSL.pyx is not cynthonized"
+        "\nTry: \n   C:\\python setup_hsl.py build_ext --inplace on a window command prompt.")
 
 # This will import the C version 
-from HSL import rgb_to_hsl_c, hsl_to_rgb_c
-
-from HSL import struct_rgb_to_hsl_c, struct_hsl_to_rgb_c
+from HSL import rgb_to_hsl_c, hsl_to_rgb_c, struct_rgb_to_hsl_c, struct_hsl_to_rgb_c
 
 # This import colorsys algo for verifications.
-import colorsys
+
+try:
+    import colorsys
+except ImportError:
+    raise ImportError(
+        "\n<colorsys> library is missing on your system."
+        "\nTry: \n   C:\\pip install colorsys on a window command prompt.")
+
 from colorsys import rgb_to_hls, hls_to_rgb
 
 import timeit

@@ -22,6 +22,14 @@ struct rgb{
     double b;
 };
 
+
+struct rgba{
+    double r;
+    double g;
+    double b;
+    double a;
+};
+
 // From a given set of RGB values, determines min and max.
 double fmax_rgb_value(double red, double green, double blue);
 double fmin_rgb_value(double red, double green, double blue);

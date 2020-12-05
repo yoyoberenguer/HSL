@@ -1,16 +1,18 @@
 ###cython: boundscheck=False, wraparound=False, nonecheck=False, optimize.use_switch=True
 
+__version__ = "1.0.1"
+
+
 # CYTHON IS REQUIRED
 try:
     cimport cython
     from cython.parallel cimport prange
 except ImportError:
-    print("\n<cython> library is missing on your system."
+    raise("\n<cython> library is missing on your system."
           "\nTry: \n   C:\\pip install cython on a window command prompt.")
-    raise SystemExit
 
-from libc.stdlib cimport srand, rand, RAND_MAX, qsort, malloc, free
-from libc.math cimport fabs, fmod
+from libc.stdlib cimport malloc, free
+from libc.math cimport fmod
 
 DEF ONE_255   = 1.0/255.0
 DEF ONE_360   = 1.0/360.0
@@ -30,6 +32,12 @@ cdef extern from 'hsl_c.c' nogil:
         double r
         double g
         double b
+
+    struct rgba:
+        double r
+        double g
+        double b
+        double a
 
     # METHOD WITH POINTER
     double * rgb_to_hsl(double r, double g, double b)nogil;
