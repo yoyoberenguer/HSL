@@ -106,4 +106,6 @@ C         struct_hsl_to_rgb_c 0.200(s)      for 1000000 iterations   (use C stru
 Colorsys  rgb_to_hls          0.884(s)      for 1000000 iterations   
 Colorsys  hls_to_rgb          0.811(s)      for 1000000 iterations 
 
+Pure C    rgb_to_hsl          0.0670        for 1000000 iterations   (method included in file hsl_c.c, using pointer)
+
 
