@@ -65,20 +65,44 @@ import HSL
 from HSL import rgb2hsl, hsl2rgb
 
 # This will import the C version 
-from HSL import rgb_to_hsl_c, hsl_to_rgb_c
+from HSL import rgb_to_hsl_c, hsl_to_rgb_c, struct_rgb_to_hsl_c, struct_hsl_to_rgb_c
 
 if __name__ == '__main__':
-  r, g, b = 25, 60, 128
-  hsl = rgb2hsl(r / 255.0, g / 255.0, b / 255.0)
 
+  r, g, b = 25, 60, 128
+  
+  # hls values are normalized if you wish to convert it to a colorys format 
+  # multiply h * 360, s * 100 and l * 100
+  
+  # below hsl values are normalized.
+  h, s, l = rgb2hsl(r / 255.0, g / 255.0, b / 255.0)
+  
+  # return rgb values normalized!
+  r, g, b = hsl2rgb(h, s, l) 
+  print("RGB (25, 60, 128) ", r * 255, g * 255, b * 255)
+  
+  r, g, b = 25, 60, 128
+  h, s, l = struct_rgb_to_hsl_c(r/255.0, g/255.0, b/255.0)
+  r, g, b = struct_hsl_to_rgb_c(h, s, l)
+  print("RGB (25, 60, 128) ", r * 255, g * 255, b * 255)
+  
 
 ```
 ## Timings:
 ```
 for 1000000 iterations
-- cython   0.5501s  5.5e-07 (single)
-- C        0.5441s  5.4e-07 (single) 
-- Pure C   0.1240s  1.2e-07    -
-- colorsys 2.3810s  2.38e-06   -
-```
+TIMINGS :
+
+Cython    rgb2hsl             0.270(s)      for 1000000 iterations
+Cython    hsl2rgb             0.200(s)      for 1000000 iterations
+
+C         rgb_to_hsl_c        0.261(s)      for 1000000 iterations   (use pointer)
+C         hsl_to_rgb_c        0.176(s)      for 1000000 iterations   (use pointer)
+
+C         struct_rgb_to_hsl_c 0.192(s)      for 1000000 iterations   (use C struct type)
+C         struct_hsl_to_rgb_c 0.200(s)      for 1000000 iterations   (use C struct type)
+          
+Colorsys  rgb_to_hls          0.884(s)      for 1000000 iterations   
+Colorsys  hls_to_rgb          0.811(s)      for 1000000 iterations 
+
 
