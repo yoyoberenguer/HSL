@@ -81,7 +81,7 @@ if __name__ == '__main__':
   
   # BELOW TESTING RGB TO HSL AND HSL TO RGB (METHOD C STRUCT)
   # THIS METHOD IS SLIGHTLY FASTER AND WE DO NOT HAVE TO WORRY ABOUT
-  FREEING THE POINTER MEMORY
+  # FREEING THE POINTER MEMORY
   r, g, b = 25, 60, 128
   h, s, l = struct_rgb_to_hsl_c(r/255.0, g/255.0, b/255.0)
   r, g, b = struct_hsl_to_rgb_c(h, s, l)
