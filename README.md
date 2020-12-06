@@ -14,7 +14,6 @@ for an good increase in speed compare to the original model.
 ```
 - python >=3.0  
 - Cython 
-- colorsys
 
 Unlike most Python software, Cython requires a C compiler to be present on the system. 
 The details of getting a C compiler varies according to the system used:
