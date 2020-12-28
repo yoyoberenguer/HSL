@@ -55,7 +55,7 @@ This will translates Cython source code into efficient C code
 If you change the file hsv_c you will also need to recompile the project 
 ```
 ## How to:
-```
+```python
 import the code in your program:
 
 import HSL
@@ -86,8 +86,8 @@ if __name__ == '__main__':
   r, g, b = struct_hsl_to_rgb_c(h, s, l)
   print("RGB (25, 60, 128) ", r * 255, g * 255, b * 255)
   
-
 ```
+
 ## Timings:
 ```
 for 1000000 iterations
