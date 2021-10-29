@@ -1,110 +1,101 @@
-# HSL algorithm
-HSL to RGB and RGB to HSL
+# HSL project
 
-## RGB to HSL and HSL to RGB colors system converstion tools.
+##  Why installing HSL :
 ```
-This project provides the cython methods and C versions of the 
-HSL conversion algorithms.
-
-The code is based on the current python COLORSYS library, adapted and improved 
-for an good increase in speed compare to the original model.
-
+This library offers fast conversion tools such as (HSL to RGB ) and (RGB to HSL) ported into cython for 
+better performances 
 ```
-## Requirements: 
+ 
+
+## Project description :
 ```
-- python >=3.0  
-- Cython 
-
-Unlike most Python software, Cython requires a C compiler to be present on the system. 
-The details of getting a C compiler varies according to the system used:
-
-Linux The GNU C Compiler (gcc) is usually present, or easily available through the package system. 
-On Ubuntu or Debian, for instance, the command sudo apt-get install build-essential will fetch 
-everything you need.
-Mac OS X To retrieve gcc, one option is to install Apple’s XCode, which can be retrieved from 
-the Mac OS X’s install DVDs or from https://developer.apple.com/.
-Windows A popular option is to use the open source MinGW (a Windows distribution of gcc). 
-See the appendix for instructions for setting up MinGW manually. 
-Enthought Canopy and Python(x,y) bundle MinGW, but some of the configuration steps in the 
-appendix might still be necessary. 
-Another option is to use Microsoft’s Visual C. One must then use the same version which the 
-installed Python was compiled with.
-The simplest way of installing Cython is by using pip:
-
-pip install Cython
-The newest Cython release can always be downloaded from https://cython.org/. 
-Unpack the tarball or zip file, enter the directory, and then run:
-
-python setup.py install
-For one-time builds, e.g. for CI/testing, on platforms that are not covered by one of the 
-wheel packages provided on PyPI,
-it is substantially faster than a full source build to install an uncompiled (slower) 
-version of Cython with
-
-pip install Cython --install-option="--no-cython-compile"
-
+Conversions between color systems (cython library)
+This module defines bidirectional conversions of color values between colors
+expressed in the RGB (Red Green Blue) color space used in computer monitors and three
+HLS (Hue Lightness Saturation).
 ```
-## Compilation:
+
+## Installation 
 ```
-You need to re-compile the file hsl.pyx after any change(s). 
-Use the following:
-C:\>python setup_hsl.py build_ext --inplace
-
-This will translates Cython source code into efficient C code
-
-If you change the file hsv_c you will also need to recompile the project 
+pip install HSL
 ```
-## How to:
-```python
-import the code in your program:
 
-import HSL
-
-# This will import the cython version 
-from HSL import rgb2hsl, hsl2rgb
-
-# This will import the C version 
-from HSL import rgb_to_hsl_c, hsl_to_rgb_c, struct_rgb_to_hsl_c, struct_hsl_to_rgb_c
+## How to?
+``` python
+from HSL import rgb_to_hsl, hsl_to_rgb
 
 if __name__ == '__main__':
-
-  r, g, b = 25, 60, 128
-  
-  # BELOW TESTING RGB TO HSL AND HSL TO RGB (METHOD WITH POINTER)
-  # hls values are normalized if you wish to convert it to a colorys format 
-  # multiply h * 360, s * 100 and l * 100
-  h, s, l = rgb2hsl(r / 255.0, g / 255.0, b / 255.0)
-  # return rgb values normalized!
-  r, g, b = hsl2rgb(h, s, l) 
-  print("RGB (25, 60, 128) ", r * 255, g * 255, b * 255)
-  
-  # BELOW TESTING RGB TO HSL AND HSL TO RGB (METHOD C STRUCT)
-  # THIS METHOD IS SLIGHTLY FASTER AND WE DO NOT HAVE TO WORRY ABOUT
-  # FREEING THE POINTER MEMORY
-  r, g, b = 25, 60, 128
-  h, s, l = struct_rgb_to_hsl_c(r/255.0, g/255.0, b/255.0)
-  r, g, b = struct_hsl_to_rgb_c(h, s, l)
-  print("RGB (25, 60, 128) ", r * 255, g * 255, b * 255)
-  
+    ONE_255 = 1.0 / 255.0
+    r, g, b = 25, 60, 128
+    print("\nOriginal RGB values (R:%s, G:%s, B:%s)\n" % (r, g, b))
+    
+    h, s, l = rgb_to_hsl(r * ONE_255, g * ONE_255, b * ONE_255)
+    
+    print("HSL values (H:%s, S:%s, L:%s)" % (h * 360.0, s * 100.0, l * 100.0))
+    
+    r, g, b = hsl_to_rgb(h, s, l)
+    
+    print("Retrieved RGB values (R:%s, G:%s, B:%s)\n" % (r * 255.0, g * 255.0, b * 255.0))
 ```
 
-## Timings:
+## Building cython code
 ```
-for 1000000 iterations
-TIMINGS :
+If you need to compile the Cython code after changing the files hsl.pyx or hsl.pxd or
+the external C code please proceed as follow:
 
-Cython    rgb2hsl             0.270(s)      for 1000000 iterations
-Cython    hsl2rgb             0.200(s)      for 1000000 iterations
+1) open a terminal window
+2) Go in the main project directory where (hsl.pyx & hsl.pxd files are located)
+3) run : c:\python setup.hsl.py build_ext --inplace
 
-C         rgb_to_hsl_c        0.261(s)      for 1000000 iterations   (use pointer)
-C         hsl_to_rgb_c        0.176(s)      for 1000000 iterations   (use pointer)
+If you have to compile the code with a specific python version, make sure
+to reference the right python version in (c:\python setup.hsl.py build_ext --inplace)
 
-C         struct_rgb_to_hsl_c 0.192(s)      for 1000000 iterations   (use C struct type)
-C         struct_hsl_to_rgb_c 0.200(s)      for 1000000 iterations   (use C struct type)
-          
-Colorsys  rgb_to_hls          0.884(s)      for 1000000 iterations   
-Colorsys  hls_to_rgb          0.811(s)      for 1000000 iterations 
+If the compilation fail, refers to the requirement section and make sure cython
+and a C-compiler are correctly install on your system.
+- A compiler such visual studio, MSVC, CGYWIN setup correctly on your system.
+  - a C compiler for windows (Visual Studio, MinGW etc) install on your system
+  and linked to your windows environment.
+  Note that some adjustment might be needed once a compiler is install on your system,
+  refer to external documentation or tutorial in order to setup this process.
+  e.g https://devblogs.microsoft.com/python/unable-to-find-vcvarsall-bat/
+```
 
-Pure C    rgb_to_hsl          0.0670        for 1000000 iterations   (method included in file hsl_c.c, using pointer)
+## Credit
+Yoann Berenguer 
 
+## Dependencies :
+```
+python >= 3.0
+cython >= 0.28
+```
 
+## License :
+```
+GNU GENERAL PUBLIC LICENSE
+                   Version 3, 29 June 2007
+
+Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.
+
+GNU General Public License v3.0
+Permissions of this strong copyleft license are conditioned on making available
+complete source code of licensed works and modifications, which include larger
+works using a licensed work, under the same license. Copyright and license notices
+must be preserved. Contributors provide an express grant of patent rights.
+
+Copyright Yoann Berenguer
+```
+
+## Timing :
+```python
+Test with 1000000 iterations
+
+This library
+rgb_to_hsl per call 2.061723e-07 overall time 0.206172 seconds
+hsl_to_rgb per call 1.181744e-07 overall time 0.118174 seconds
+
+Colorsys library
+colorsys.rgb_to_hls per call 1.054554e-06 overall  time 1.054554 seconds
+colorsys.hls_to_rgb per call 8.701219e-07 overall  time 0.870121 seconds
+```
