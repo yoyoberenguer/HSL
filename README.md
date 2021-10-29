@@ -2,8 +2,8 @@
 
 ##  Why installing HSL :
 ```
-This library offers fast conversion tools such as (HSL to RGB ) and (RGB to HSL) ported into cython for 
-better performances 
+This library offers fast conversion tools such as (HSL to RGB ) and (RGB to HSL) 
+ported into cython for better performances 
 ```
  
 
