@@ -45,7 +45,7 @@ the external C code please proceed as follow:
 
 1) open a terminal window
 2) Go in the main project directory where (hsl.pyx & hsl.pxd files are located)
-3) run : c:\python setup_hsl.py build_ext --inplace
+3) run : python setup_hsl.py build_ext --inplace
 
 If you have to compile the code with a specific python version, make sure
 to reference the right python version in (c:\python setup.hsl.py build_ext --inplace)
