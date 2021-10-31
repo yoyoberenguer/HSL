@@ -1,11 +1,44 @@
-/* C implementation */
+/*
+ MIT License
+
+Copyright (c) 2019 Yoann Berenguer
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+ C IMPLEMENTATION
+
+ ********************  Conversions between color systems *******************************
+
+ This module defines bidirectional conversions of color values between colors
+ expressed in the RGB (Red Green Blue) color space used in computer monitors and three
+ HLS (Hue Lightness Saturation).
+
+
+
+*/
 
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>
 #include <math.h>
-#include <float.h>
 #include <assert.h>
 #include <time.h>
 
@@ -13,49 +46,48 @@
 struct hsl{
     double h;    // hue
     double s;    // saturation
-    double l;    // value
+    double l;    // Lightness
 };
 
 struct rgb{
-    double r;
-    double g;
-    double b;
+    double r;   // red
+    double g;   // green
+    double b;   // blue
 };
-
 
 struct rgba{
-    double r;
-    double g;
-    double b;
-    double a;
+    double r;   // red
+    double g;   // green
+    double b;   // blue
+    double a;   // alpha
 };
 
-// From a given set of RGB values, determines min and max.
-double fmax_rgb_value(double red, double green, double blue);
-double fmin_rgb_value(double red, double green, double blue);
 
-// METHOD 1
+// METHOD 1 (USING POINTER)
 // Convert RGB color model into HSL and reciprocally
-double hue_to_rgb(double m1, double m2, double hue);
 double * rgb_to_hsl(double r, double g, double b);
 double * hsl_to_rgb(double h, double s, double l);
+double hue_to_rgb(double m1, double m2, double h);
 
-// METHOD 2
+// METHOD 2 (USING STRUCT)
 struct hsl struct_rgb_to_hsl(double r, double g, double b);
 struct rgb struct_hsl_to_rgb(double h, double s, double l);
 
-#define ONE_SIX 1.0/6.0
-#define ONE_THIRD 1.0 / 3.0
-#define TWO_THIRD 2.0 / 3.0
-#define ONE_255 1.0/255.0
-#define ONE_360 1.0/360.0
+// DETERMINE MAX & MIN VALUES FROM A PIXEL DEFINE WITH RGB VALUES
+double fmax_rgb_value(double red, double green, double blue);
+double fmin_rgb_value(double red, double green, double blue);
 
-#define cmax(a,b) \
+// CONVENIENT CONSTANTS
+#define ONE_SIX     1.0 / 6.0
+#define ONE_THIRD   1.0 / 3.0
+#define TWO_THIRD   2.0 / 3.0
+#define ONE_255     1.0 / 255.0
+#define ONE_360     1.0 / 360.0
+
+#define max_c(a,b) \
    ({ __typeof__ (a) _a = (a); \
        __typeof__ (b) _b = (b); \
      _a > _b ? _a : _b; })
-
-
 
 // All inputs have to be double precision (python float) in range [0.0 ... 255.0]
 // Output: return the maximum value from given RGB values (double precision).
@@ -97,21 +129,24 @@ inline double fmin_rgb_value(double red, double green, double blue)
 }
 
 
-// HSL: Hue, Saturation, Luminance
-// H: position in the spectrum
-// L: color lightness
-// S: color saturation
-// all inputs have to be double precision, (python float) in range [0.0 ... 1.0]
-// outputs is a C array containing HSL values (double precision) normalized.
-// h (°) = h * 360
-// s (%) = s * 100
-// l (%) = l * 100
+/*
+******************************* POINTER METHOD *******************************
+*/
+
+// HSL: (Hue - position in the spectrum, Saturation, Lightness)
+// All inputs have to be double precision, (python float) in range [0.0 ... 1.0]
+// Outputs is a C array pointer containing HSL values (double precision) normalized.
+// If you require the HSL value in the format (Hue in degrees, Saturation in percentage,
+// Lightness in percentage)  multiply HSL values such as
+// h = h * 360 (°)
+// s = s * 100 (%)
+// l = l * 100 (%)
 inline double * rgb_to_hsl(double r, double g, double b)
 { 
-    // check if all inputs are normalized
-    assert ((0.0<= r) <= 1.0);
-    assert ((0.0<= g) <= 1.0);
-    assert ((0.0<= b) <= 1.0);
+// check if all inputs are normalized
+//    assert ((0.0<= r) <= 1.0);
+//    assert ((0.0<= g) <= 1.0);
+//    assert ((0.0<= b) <= 1.0);
 
     double *hsl = malloc (sizeof (double)* 3);
     // Check if the memory has been successfully 
@@ -163,10 +198,7 @@ inline double * rgb_to_hsl(double r, double g, double b)
     hsl[0] = h * ONE_360;
     hsl[1] = s;
     hsl[2] = l;
-    // printf("\n %f, %f, %f", hsl[0], hsl[1], hsl[2]);
     return hsl;
-
-
 }
 
 
@@ -194,7 +226,8 @@ inline double hue_to_rgb(double m1, double m2, double h)
 
 // Convert HSL color model into RGB (red, green, blue)
 // all inputs have to be double precision, (python float) in range [0.0 ... 1.0]
-// outputs is a C array containing RGB values (double precision) normalized.
+// outputs is a C array pointer containing RGB values (double precision) normalized.
+// If you need RGB values within range [0 ... 255] multiply the values by 255
 inline double * hsl_to_rgb(double h, double s, double l)
 {
     double *rgb = malloc (sizeof (double) * 3);
@@ -227,24 +260,29 @@ inline double * hsl_to_rgb(double h, double s, double l)
     return rgb;
 }
 
+/*
+******************************* END OF POINTER METHOD *******************************
+*/
 
 
+/*
+******************************* STRUCT METHOD *******************************
+*/
 
-// HSL: Hue, Saturation, Luminance
-// H: position in the spectrum
-// L: color lightness
-// S: color saturation
-// all inputs have to be double precision, (python float) in range [0.0 ... 1.0]
-// outputs is a C array containing HSL values (double precision) normalized.
-// h (°) = h * 360
-// s (%) = s * 100
-// l (%) = l * 100
+// HSL: (Hue - position in the spectrum, Saturation, Lightness)
+// All inputs have to be double precision, (python float) in range [0.0 ... 1.0]
+// Outputs is a C struct containing HSL values (double precision) normalized.
+// If you require the HSL value in the format (Hue in degrees, Saturation in percentage,
+// Lightness in percentage)  multiply HSL values such as
+// h = h * 360 (°)
+// s = s * 100 (%)
+// l = l * 100 (%)
 inline struct hsl struct_rgb_to_hsl(double r, double g, double b)
 {
-    // check if all inputs are normalized
-    assert ((0.0<= r) <= 1.0);
-    assert ((0.0<= g) <= 1.0);
-    assert ((0.0<= b) <= 1.0);
+// check if all inputs are normalized
+//    assert ((0.0 <= r) || (r <= 1.0));
+//    assert ((0.0 <= g) || (r <= 1.0));
+//    assert ((0.0 <= b) || (r <= 1.0));
 
     struct hsl hsl_={.h=0.0, .s=0.0, .l=0.0};
 
@@ -296,8 +334,9 @@ inline struct hsl struct_rgb_to_hsl(double r, double g, double b)
 
 
 // Convert HSL color model into RGB (red, green, blue)
-// all inputs have to be double precision, (python float) in range [0.0 ... 1.0]
-// outputs is a C array containing RGB values (double precision) normalized.
+// All inputs have to be double precision, (python float) in range [0.0 ... 1.0]
+// Outputs is a C struct containing RGB values (double precision) normalized.
+// If you need RGB values within range [0 ... 255] multiply the values by 255
 inline struct rgb struct_hsl_to_rgb(double h, double s, double l)
 {
 
@@ -324,7 +363,9 @@ inline struct rgb struct_hsl_to_rgb(double h, double s, double l)
     rgb_.b = hue_to_rgb(m1, m2, (h - ONE_THIRD));
     return rgb_;
 }
-
+/*
+******************************* END OF STRUCT METHOD *******************************
+*/
 
 int main(){
 double *array;

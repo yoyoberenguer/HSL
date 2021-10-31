@@ -1,0 +1,16 @@
+include example.py
+include hsl.c
+include hsl.h
+include hsl.pxd
+include hsl.pyx
+include testing.pyx
+include hsl_c.c
+include LICENSE
+include MANIFEST.in
+include requirements.txt
+include setup_hsl.py
+graft test
+include __init__.pxd
+include __init__.py
+pyproject.toml
+ 
