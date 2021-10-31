@@ -48,7 +48,7 @@ the external C code please proceed as follow:
 3) run : python setup_hsl.py build_ext --inplace
 
 If you have to compile the code with a specific python version, make sure
-to reference the right python version in (c:\python setup.hsl.py build_ext --inplace)
+to reference the right python version in (python setup_hsl.py build_ext --inplace)
 
 If the compilation fail, refers to the requirement section and make sure cython
 and a C-compiler are correctly install on your system.
