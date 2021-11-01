@@ -22,7 +22,7 @@ pip install HSL
 
 ## How to?
 ``` python
-from HSL import rgb_to_hsl, hsl_to_rgb
+from HSL.hsl import rgb_to_hsl, hsl_to_rgb
 
 if __name__ == '__main__':
     ONE_255 = 1.0 / 255.0
